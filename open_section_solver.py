@@ -29,7 +29,7 @@ class OpenSectionSolver(Solver):
             if solved_on_this_iteration == 0:
                 can_continue = False
 
-    def calculate_moments(self):
+    def calculate_moments_about_shear_centre(self):
         # Calculate the moments
         M = 0
         N = CoordSys3D('N')
@@ -50,7 +50,7 @@ class OpenSectionSolver(Solver):
         return M
 
     def solve_for_shear_center(self):
-        moment = self.calculate_moments()
+        moment = self.calculate_moments_about_shear_centre()
 
         if dimensions['S_z'] != 0:
             self.shape.ey = moment / dimensions['S_z']
