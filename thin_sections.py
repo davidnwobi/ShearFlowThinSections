@@ -7,19 +7,23 @@ from open_section_solver import OpenSectionSolver
 from closed_section_solver import SingleClosedSectionSolver
 
 a = symbols('a', real=True, positive=True)
-dimensions.update({'b': 2 * a, 'h': 2 * a})
+dimensions.update({'b': a, 'h': a})
 shape = Shape()
-solver = SingleClosedSectionSolver(shape)
-solver.solve()
+
 
 print('Shape Properties:')
 print(f'dy = {shape.dy}')
 print(f'dz = {shape.dz}')
 print(f'Iy = {shape.Iy}')
 print(f'Iz = {shape.Iz}')
-print(f'Iyz = {shape.Iyz}')
+print(f'Iyz = {simplify(shape.Iyz)}')
+
+solver = SingleClosedSectionSolver(shape)
+solver.solve()
+
 print(f'Ey = {shape.ey}')
 print(f'Ez = {shape.ez}\n')
+# print('qo=', simplify(shape.qo.subs(dimensions['b'], sqrt(h**2 + d**2))))
 print('Element Properties:')
 solution = pd.DataFrame(columns=['Element', 'l', 't', 'ty', 'tz', 'Int_ty', 'Int_tz', 'qs', 'Q', 'Tau'])
 for element in shape.elements.values():
@@ -37,17 +41,29 @@ for element in shape.elements.values():
     print(f'Int_ty = {element.int_ty}')
     print(f'Int_tz = {element.int_tz}')
     print(f'Int_ty at Node1 = {element.int_ty.subs(element.S, 0)}')
+    try:
+        print(f'Int_ty at Halfway = {element.int_ty.subs(element.S, element.length / 2)}')
+    except:
+        pass
     print(f'Int_ty at Node2 = {element.int_ty.subs(element.S, element.length)}')
     print(f'Int_tz at Node1 = {element.int_tz.subs(element.S, 0)}')
+    try:
+        print(f'Int_tz at Halfway = {element.int_tz.subs(element.S, element.length / 2)}')
+    except:
+        pass
     print(f'Int_tz at Node2 = {element.int_tz.subs(element.S, element.length)}')
     print(f'qb = {element.qb}')
     print(f'qb at Node1 = {element.qb.subs(element.S, 0)}')
+    try:
+        print(f'qb at Halfway = {element.qb.subs(element.S, element.length / 2)}')
+    except:
+        pass
     print(f'qb at Node2 = {element.qb.subs(element.S, element.length)}')
     print(f'Qb = {element.Qb}')
     print(f'qs = {element.qs}')
     print(f'qs at Node1 = {element.qs.subs(element.S, 0)}')
     print(f'qs at Node2 = {element.qs.subs(element.S, element.length)}')
-    print(f'Q = {element.Q}')
+    print(f'Q = {nsimplify(element.Q, rational=True)}')
     print(f'Tau = {element.Tau}\n')
 
 

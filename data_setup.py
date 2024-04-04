@@ -128,6 +128,13 @@ def calculate_beam_properties(shape):
     Iz = nsimplify(beam_df['Iz'].sum() + beam_df['y2A'].sum(), tolerance=1e-10, rational=True)
     Iyz = nsimplify(beam_df['Iyz'].sum() + beam_df['yzA'].sum(), tolerance=1e-10, rational=True)
 
+    dy = simplify(dy)
+    dz = simplify(dz)
+    A = simplify(A)
+    Iy = simplify(Iy)
+    Iz = simplify(Iz)
+    Iyz = simplify(Iyz)
+
     return dy, dz, A, Iy, Iz, Iyz
 
 

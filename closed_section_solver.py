@@ -15,8 +15,6 @@ class SingleClosedSectionSolver(OpenSectionSolver):
         self.update_solution()
         return self.shape
 
-
-
     def calculate_qo_moment_balance(self):
         moments = self.calculate_moments()
         print(f'Moments = {moments}')
@@ -28,8 +26,8 @@ class SingleClosedSectionSolver(OpenSectionSolver):
         Q = 0
         s = 0
         for element in self.shape.elements.values():
-            Q += element.Q
-            s += element.length
+            Q += element.Q*dimensions['t']/element.t
+            s += element.length*dimensions['t']/element.t
         qo = -Q / s
         print(f'qo = {qo}')
         return qo
@@ -45,3 +43,13 @@ class SingleClosedSectionSolver(OpenSectionSolver):
             element.Q = simplify(element.Q)
             element.Tau = simplify(element.Tau)
 
+    def solve_for_shear_center(self):
+        qo = self.calculate_qo_rate_of_twist()
+        moment = self.calculate_moments()
+
+        if dimensions['S_z'] != 0:
+            self.shape.ey = (moment + 2 * self.shape.areas[0] * qo) / dimensions['S_z']
+        if dimensions['S_y'] != 0:
+            self.shape.ez = (moment + 2 * self.shape.areas[0] * qo) / dimensions['S_y']
+        self.shape.ey = simplify(self.shape.ey)
+        self.shape.ez = simplify(self.shape.ez)

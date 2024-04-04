@@ -62,14 +62,25 @@ class OpenSectionSolver(Solver):
     def solve_for_integrals(self, element):
         element.y = element.Node1.y + (element.Node2.y - element.Node1.y) / element.length * element.S
         element.z = element.Node1.z + (element.Node2.z - element.Node1.z) / element.length * element.S
+        element.y = simplify(element.y)
+        element.z = simplify(element.z)
+
         element.ty = element.t * element.y
         element.tz = element.t * element.z
+        element.ty = simplify(element.ty)
+        element.tz = simplify(element.tz)
+
         element.int_ty = integrate(element.ty, element.S)
         element.int_tz = integrate(element.tz, element.S)
+        element.int_ty = simplify(element.int_ty)
+        element.int_tz = simplify(element.int_tz)
+
         self.solve_for_constants(element)
 
         element.int_ty = nsimplify(element.int_ty, tolerance=1e-10, rational=True)
         element.int_tz = nsimplify(element.int_tz, tolerance=1e-10, rational=True)
+        element.int_ty = simplify(element.int_ty)
+        element.int_tz = simplify(element.int_tz)
 
     def solve_for_shear_flow(self, element):
         pt1_num = self.shape.Iz * dimensions['S_z'] - self.shape.Iyz * dimensions['S_y']
@@ -96,6 +107,13 @@ class OpenSectionSolver(Solver):
         element.Qb = element.Q
         element.Tau = nsimplify(element.Tau, tolerance=1e-10, rational=True)
         element.Taub = element.Tau
+
+        element.qs = simplify(element.qs)
+        element.qb = simplify(element.qb)
+        element.Q = simplify(element.Q)
+        element.Qb = simplify(element.Qb)
+        element.Tau = simplify(element.Tau)
+        element.Taub = simplify(element.Taub)
 
     def solve_for_constants(self, element):
         # Locate which of the two nodes has a boundary condition
