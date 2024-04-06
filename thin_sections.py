@@ -4,11 +4,24 @@ from shape import Shape
 from sympy import *
 from data_setup import dimensions
 from open_section_solver import OpenSectionSolver
-from closed_section_solver import SingleClosedSectionSolver
+from double_symmetric_closed_section_solver import DoubleSymmetricClosedSectionSolver
+import matplotlib.pyplot as plt
 
 a = symbols('a', real=True, positive=True)
-dimensions.update({'b': a, 'h': a})
+dimensions.update({'b': 4*a, 'h': a})
 shape = Shape()
+
+# for element in shape.elements.values():
+#     x1 = element.Node1.y.subs(a, 1).subs(dimensions['t'], 1)
+#     y1 = element.Node1.z.subs(a, 1).subs(dimensions['t'], 1)
+#     x2 = element.Node2.y.subs(a, 1).subs(dimensions['t'], 1)
+#     y2 = element.Node2.z.subs(a, 1).subs(dimensions['t'], 1)
+#     plt.plot([x1, x2], [y1, y2], 'k-')
+#
+# plt.axis('equal')
+# plt.gca().invert_yaxis()
+# plt.gca().invert_xaxis()
+# plt.show()
 
 
 print('Shape Properties:')
@@ -18,8 +31,12 @@ print(f'Iy = {shape.Iy}')
 print(f'Iz = {shape.Iz}')
 print(f'Iyz = {simplify(shape.Iyz)}')
 
-solver = SingleClosedSectionSolver(shape)
+solver = DoubleSymmetricClosedSectionSolver(shape)
 solver.solve()
+# try:
+#
+# except:
+#     print('Solver Failed')
 
 print(f'Ey = {shape.ey}')
 print(f'Ez = {shape.ez}\n')
@@ -67,6 +84,7 @@ for element in shape.elements.values():
     print(f'Tau = {element.Tau}\n')
 
 
+
 def obtain_max_value_of_equation(equation, variable):
     derivative = diff(equation, variable)
     if derivative == 0:
@@ -84,10 +102,10 @@ def obtain_max_value_of_equation(equation, variable):
     if abs(value) > abs(max_value):
         max_value = value
         max_value_pos = element.length
-    return nsimplify(max_value, rational=True, tolerance=1e-14), nsimplify(max_value_pos, rational=True, tolerance=1e-14)
+    return nsimplify(max_value, rational=True), nsimplify(max_value_pos, rational=True)
 
 
-for element in shape.elements.values():
-    print(f'Maximum Value of qs for Element {element.pos}:')
-    max_qs = obtain_max_value_of_equation(element.qs, element.S)
-    print(f'Max_qs = {max_qs[0]} at S = {max_qs[1]} \n')
+# for element in shape.elements.values():
+#     print(f'Maximum Value of qs for Element {element.pos}:')
+#     max_qs = obtain_max_value_of_equation(element.qs, element.S)
+#     print(f'Max_qs = {max_qs[0]} at S = {max_qs[1]} \n')

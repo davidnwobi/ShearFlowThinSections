@@ -3,6 +3,7 @@ import pandas as pd
 from node import Node
 from element import Element
 from sympy import *
+import warnings
 
 import numpy as np
 
@@ -51,8 +52,12 @@ def extract_forces(forces_path="Forces.xlsx"):
     force_dict = {'S_y': list(forces_df.loc['S_y']), 'S_z': list(forces_df.loc['S_z'])}
     if not force_dict['S_y'][0]:
         dimensions['S_y'] = 0
+    else:
+        dimensions['S_y'] = S_y
     if not force_dict['S_z'][0]:
         dimensions['S_z'] = 0
+    else:
+        dimensions['S_z'] = S_z
     force_dict['S_y'][1] = force_dict['S_y'][1] * dimensions['h']
     force_dict['S_z'][1] = force_dict['S_z'][1] * dimensions['b']
     return force_dict
@@ -141,11 +146,21 @@ def calculate_beam_properties(shape):
 def extract_sections(sections_path="ClosedSections.xlsx"):
     sections_df = pd.read_excel(sections_path, index_col=0)
     sections = []
-    for i, elements in sections_df.iterrows():
-        sections.append(set(elements.iloc[1:].dropna().astype(int).tolist()))
-    areas = (sections_df['Area']*dimensions['b']*dimensions['h']).tolist()
+    try:
+        Yc = (sections_df['Yc']*dimensions['b']).tolist()
+        Zc = (sections_df['Zc']*dimensions['h']).tolist()
+        for i, elements in sections_df.iterrows():
+            sections.append(set(elements.iloc[3:].dropna().astype(int).tolist()))
+        areas = (sections_df['Area'] * dimensions['b'] * dimensions['h']).tolist()
+        return sections, areas, Yc, Zc
+    except:
+        warnings.warn("Warning: Xc and Yc not found in ClosedSections.xlsx")
+        for i, elements in sections_df.iterrows():
+            sections.append(set(elements.iloc[1:].dropna().astype(int).tolist()))
+        areas = (sections_df['Area']*dimensions['b']*dimensions['h']).tolist()
 
-    return sections, areas
+        return sections, areas, [0]*len(sections), [0]*len(sections)
+
 
 
 if __name__ == '__main__':
