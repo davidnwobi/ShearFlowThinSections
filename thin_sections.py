@@ -24,7 +24,7 @@ solver.solve()
 # try:
 #
 # except:
-#     print('Solver Failed')
+#     print('Solver Failed'
 
 print(f'Ey = {shape.ey}')
 print(f'Ez = {shape.ez}\n')

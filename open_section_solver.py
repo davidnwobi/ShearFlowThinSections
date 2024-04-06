@@ -40,7 +40,7 @@ class OpenSectionSolver(Solver):
                 if element.pos not in section:
                     continue
                 M += self.calculate_element_moment_about_ref_point(element, y_1, z_1)
-        M = simplify(M)
+        M = nsimplify(M)
         return M
 
     @staticmethod
@@ -55,7 +55,7 @@ class OpenSectionSolver(Solver):
         else:
             F = element.Q * (element.cos() * N.j + element.sin() * N.k)
         d = (y_2 - y_1) * N.j + (z_2 - z_1) * N.k
-        M -= (F.cross(d)).dot(N.i)
+        M -= nsimplify((F.cross(d)).dot(N.i))
         return M
 
     def solve_for_shear_center(self):
