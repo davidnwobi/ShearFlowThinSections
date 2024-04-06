@@ -2,6 +2,7 @@ from shape import Shape
 from sympy import symbols, expand
 from data_setup import dimensions
 from open_section_solver import OpenSectionSolver
+from plotting import draw_shape
 
 
 def test_ex1_shear_center_open():

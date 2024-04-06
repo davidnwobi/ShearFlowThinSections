@@ -29,28 +29,37 @@ class OpenSectionSolver(Solver):
             if solved_on_this_iteration == 0:
                 can_continue = False
 
-    def calculate_moments_about_shear_centre(self):
+    def calculate_moments_about_shear_center_ref(self):
+        return self.calculate_moments_about_ref_point(self.shape.shear_center_y, self.shape.shear_center_z)
+
+    def calculate_moments_about_ref_point(self, y_1, z_1):
         # Calculate the moments
         M = 0
-        N = CoordSys3D('N')
-        for index, element in self.shape.elements.items():
-            if element.pos not in self.shape.sections[0]:
-                continue
-            y_2 = element.Node1.y + (element.Node2.y - element.Node1.y) / 2
-            z_2 = element.Node1.z + (element.Node2.z - element.Node1.z) / 2
-
-            y_1 = self.shape.force_dict['S_z'][1]
-            z_1 = self.shape.force_dict['S_y'][1]
-
-            F = element.Q * (element.cos() * N.j + element.sin() * N.k)
-            d = (y_2 - y_1) * N.j + (z_2 - z_1) * N.k
-            M -= (F.cross(d)).dot(N.i)
-
+        for i, section in enumerate(self.shape.sections):
+            for index, element in self.shape.elements.items():
+                if element.pos not in section:
+                    continue
+                M += self.calculate_element_moment_about_ref_point(element, y_1, z_1)
         M = simplify(M)
         return M
 
+    @staticmethod
+    def calculate_element_moment_about_ref_point(element, y_1, z_1, Qb=False):
+        M = 0
+        N = CoordSys3D('N')
+        y_2 = element.Node1.y + (element.Node2.y - element.Node1.y) / 2
+        z_2 = element.Node1.z + (element.Node2.z - element.Node1.z) / 2
+        F = 0
+        if Qb:
+            F = element.Qb * (element.cos() * N.j + element.sin() * N.k)
+        else:
+            F = element.Q * (element.cos() * N.j + element.sin() * N.k)
+        d = (y_2 - y_1) * N.j + (z_2 - z_1) * N.k
+        M -= (F.cross(d)).dot(N.i)
+        return M
+
     def solve_for_shear_center(self):
-        moment = self.calculate_moments_about_shear_centre()
+        moment = self.calculate_moments_about_shear_center_ref()
 
         if dimensions['S_z'] != 0:
             self.shape.ey = moment / dimensions['S_z']

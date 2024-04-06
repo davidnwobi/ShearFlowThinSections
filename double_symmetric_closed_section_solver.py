@@ -60,32 +60,6 @@ class DoubleSymmetricClosedSectionSolver(OpenSectionSolver):
                 element.Q = simplify(element.Q)
                 element.Tau = simplify(element.Tau)
 
-    def calculate_moments_about_ref_point(self, y_1, z_1):
-        # Calculate the moments
-        M = 0
-        for i, section in enumerate(self.shape.sections):
-            for index, element in self.shape.elements.items():
-                if element.pos not in section:
-                    continue
-                M += self.calculate_element_moment_about_ref_point(element, y_1, z_1)
-        M = simplify(M)
-        return M
-
-    @staticmethod
-    def calculate_element_moment_about_ref_point(element, y_1, z_1, Qb=False):
-        M = 0
-        N = CoordSys3D('N')
-        y_2 = element.Node1.y + (element.Node2.y - element.Node1.y) / 2
-        z_2 = element.Node1.z + (element.Node2.z - element.Node1.z) / 2
-        F = 0
-        if Qb:
-            F = element.Qb * (element.cos() * N.j + element.sin() * N.k)
-        else:
-            F = element.Q * (element.cos() * N.j + element.sin() * N.k)
-        d = (y_2 - y_1) * N.j + (z_2 - z_1) * N.k
-        M -= (F.cross(d)).dot(N.i)
-        return M
-
     def solve_for_qo(self):
         self.calculate_rate_of_twist_eqns()
         eq1 = Eq(self.shape.rate_of_twist_eqn[0] - self.shape.rate_of_twist_eqn[1], 0)
