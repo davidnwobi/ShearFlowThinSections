@@ -29,28 +29,37 @@ class OpenSectionSolver(Solver):
             if solved_on_this_iteration == 0:
                 can_continue = False
 
-    def calculate_moments(self):
+    def calculate_moments_about_shear_center_ref(self):
+        return self.calculate_moments_about_ref_point(self.shape.shear_center_y, self.shape.shear_center_z)
+
+    def calculate_moments_about_ref_point(self, y_1, z_1):
         # Calculate the moments
         M = 0
+        for i, section in enumerate(self.shape.sections):
+            for index, element in self.shape.elements.items():
+                if element.pos not in section:
+                    continue
+                M += self.calculate_element_moment_about_ref_point(element, y_1, z_1)
+        M = nsimplify(M)
+        return M
+
+    @staticmethod
+    def calculate_element_moment_about_ref_point(element, y_1, z_1, Qb=False):
+        M = 0
         N = CoordSys3D('N')
-        for index, element in self.shape.elements.items():
-            if element.pos not in self.shape.sections[0]:
-                continue
-            y_2 = element.Node1.y + (element.Node2.y - element.Node1.y) / 2
-            z_2 = element.Node1.z + (element.Node2.z - element.Node1.z) / 2
-
-            y_1 = self.shape.force_dict['S_z'][1]
-            z_1 = self.shape.force_dict['S_y'][1]
-
+        y_2 = element.Node1.y + (element.Node2.y - element.Node1.y) / 2
+        z_2 = element.Node1.z + (element.Node2.z - element.Node1.z) / 2
+        F = 0
+        if Qb:
+            F = element.Qb * (element.cos() * N.j + element.sin() * N.k)
+        else:
             F = element.Q * (element.cos() * N.j + element.sin() * N.k)
-            d = (y_2 - y_1) * N.j + (z_2 - z_1) * N.k
-            M -= (F.cross(d)).dot(N.i)
-
-        M = simplify(M)
+        d = (y_2 - y_1) * N.j + (z_2 - z_1) * N.k
+        M -= nsimplify((F.cross(d)).dot(N.i))
         return M
 
     def solve_for_shear_center(self):
-        moment = self.calculate_moments()
+        moment = self.calculate_moments_about_shear_center_ref()
 
         if dimensions['S_z'] != 0:
             self.shape.ey = moment / dimensions['S_z']
@@ -62,14 +71,25 @@ class OpenSectionSolver(Solver):
     def solve_for_integrals(self, element):
         element.y = element.Node1.y + (element.Node2.y - element.Node1.y) / element.length * element.S
         element.z = element.Node1.z + (element.Node2.z - element.Node1.z) / element.length * element.S
+        element.y = simplify(element.y)
+        element.z = simplify(element.z)
+
         element.ty = element.t * element.y
         element.tz = element.t * element.z
+        element.ty = simplify(element.ty)
+        element.tz = simplify(element.tz)
+
         element.int_ty = integrate(element.ty, element.S)
         element.int_tz = integrate(element.tz, element.S)
+        element.int_ty = simplify(element.int_ty)
+        element.int_tz = simplify(element.int_tz)
+
         self.solve_for_constants(element)
 
         element.int_ty = nsimplify(element.int_ty, tolerance=1e-10, rational=True)
         element.int_tz = nsimplify(element.int_tz, tolerance=1e-10, rational=True)
+        element.int_ty = simplify(element.int_ty)
+        element.int_tz = simplify(element.int_tz)
 
     def solve_for_shear_flow(self, element):
         pt1_num = self.shape.Iz * dimensions['S_z'] - self.shape.Iyz * dimensions['S_y']
@@ -96,6 +116,13 @@ class OpenSectionSolver(Solver):
         element.Qb = element.Q
         element.Tau = nsimplify(element.Tau, tolerance=1e-10, rational=True)
         element.Taub = element.Tau
+
+        element.qs = simplify(element.qs)
+        element.qb = simplify(element.qb)
+        element.Q = simplify(element.Q)
+        element.Qb = simplify(element.Qb)
+        element.Tau = simplify(element.Tau)
+        element.Taub = simplify(element.Taub)
 
     def solve_for_constants(self, element):
         # Locate which of the two nodes has a boundary condition
