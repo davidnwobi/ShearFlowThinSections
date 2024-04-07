@@ -1,7 +1,6 @@
-from data_setup import dimensions
-from open_section_solver import OpenSectionSolver
-from sympy import integrate, simplify, sqrt
-from sympy.vector import CoordSys3D
+from ..utils.data_setup import dimensions
+from .open_section_solver import OpenSectionSolver
+from sympy import integrate, simplify
 
 
 class SingleClosedSectionSolver(OpenSectionSolver):

@@ -1,11 +1,9 @@
 from collections import defaultdict
 import pandas as pd
-from node import Node
-from element import Element
+from ..data.node import Node
+from ..data.element import Element
 from sympy import *
 import warnings
-
-import numpy as np
 
 b, h, t, S_y, S_z, I_y, I_z, I_yz = symbols('b h t S_y S_z I_y I_z I_yz', real=True, positive=True)
 dimensions = {'b': b, 'h': h, 't': t, 'S_y': S_y, 'S_z': S_z, 'I_y': I_y, 'I_z': I_z, 'I_yz': I_yz}

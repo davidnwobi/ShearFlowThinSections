@@ -1,8 +1,8 @@
 
-from shape import Shape
+from src import Shape
 from sympy import symbols, expand
-from data_setup import dimensions
-from double_symmetric_closed_section_solver import DoubleSymmetricClosedSectionSolver
+from src import dimensions
+from src import SectionType, SectionSolver
 
 
 def test_ex1_double_symmetrical():
@@ -13,8 +13,8 @@ def test_ex1_double_symmetrical():
                     forces='ex1_double_symmetrical/Forces.xlsx',
                     sections='ex1_double_symmetrical/ClosedSections.xlsx',
                     shear_center_ref='ex1_double_symmetrical/Shear Center Ref.xlsx')
-    solver = DoubleSymmetricClosedSectionSolver(shape)
-    solver.solve()
+    SectionSolver.solve(shape, SectionType.DOUBLE_SYMMETRIC)
+
     S_z = dimensions['S_z']
     assert expand(shape.qo[0] - 59*S_z/(108*a)) == 0
     assert expand(shape.qo[1] - (-5*S_z/(108*a))) == 0

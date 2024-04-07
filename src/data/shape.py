@@ -1,6 +1,5 @@
 import pandas as pd
-
-from data_setup import extract_nodes_and_elements, convert_nodes_and_elements_to_shape, calculate_beam_properties, \
+from ..utils.data_setup import extract_nodes_and_elements, convert_nodes_and_elements_to_shape, calculate_beam_properties, \
     extract_forces, extract_sections, dimensions
 
 

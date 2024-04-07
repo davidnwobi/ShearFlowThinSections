@@ -1,5 +1,5 @@
 from sympy import Mul, sqrt, symbols, Symbol
-from node import Node
+from .node import Node
 
 class Element:
     def __init__(self, pos: int,  Node1: 'Node', Node2: 'Node', t: Symbol):

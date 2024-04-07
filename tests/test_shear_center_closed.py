@@ -1,7 +1,7 @@
-from shape import Shape
+from src import Shape
 from sympy import symbols, expand, nsimplify
-from data_setup import dimensions
-from closed_section_solver import SingleClosedSectionSolver
+from src import dimensions
+from src import SectionType, SectionSolver
 
 
 def test_ex1_shear_center_closed():
@@ -14,8 +14,8 @@ def test_ex1_shear_center_closed():
         sections="ex1_shear_center_closed/ClosedSections.xlsx",
         shear_center_ref="ex1_shear_center_closed/Shear Center Ref.xlsx"
     )
-    solver = SingleClosedSectionSolver(shape)
-    solver.solve()
+
+    SectionSolver.solve(shape, SectionType.SINGLE_CLOSED)
 
     S_z = dimensions['S_z']
     assert expand(nsimplify(shape.ey, rational=True) - 20/7*a) == 0
@@ -32,8 +32,7 @@ def test_ex2_shear_center_closed():
         sections="ex2_shear_center_closed/ClosedSections.xlsx",
         shear_center_ref="ex2_shear_center_closed/Shear Center Ref.xlsx"
     )
-    solver = SingleClosedSectionSolver(shape)
-    solver.solve()
+    SectionSolver.solve(shape, SectionType.SINGLE_CLOSED)
 
     S_y = dimensions['S_y']
     assert expand(nsimplify(shape.ez, rational=True) - 22/63*a) == 0

@@ -1,7 +1,7 @@
-from shape import Shape
+from src import Shape
 from sympy import symbols, expand, sqrt, nsimplify
-from data_setup import dimensions
-from closed_section_solver import SingleClosedSectionSolver
+from src import dimensions
+from src import SectionType, SectionSolver
 
 
 def test_ex1_closed_section():
@@ -13,8 +13,7 @@ def test_ex1_closed_section():
                   sections='ex1_closed_section/ClosedSections.xlsx',
                   shear_center_ref='ex1_closed_section/Shear Center Ref.xlsx')
 
-    solver = SingleClosedSectionSolver(shape)
-    solver.solve()
+    SectionSolver.solve(shape, SectionType.SINGLE_CLOSED)
 
     S01 = shape.elements[(0, 1)].S
     S12 = shape.elements[(1, 2)].S
@@ -45,8 +44,7 @@ def test_ex2_closed_section():
                   sections='ex2_closed_section/ClosedSections.xlsx',
                   shear_center_ref='ex2_closed_section/Shear Center Ref.xlsx')
 
-    solver = SingleClosedSectionSolver(shape)
-    solver.solve()
+    SectionSolver.solve(shape, SectionType.SINGLE_CLOSED)
 
     S_y = dimensions['S_y']
     assert expand(shape.elements[(1, 2)].Qb - S_y / 18) == 0

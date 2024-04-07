@@ -1,6 +1,6 @@
-from sympy import integrate, simplify, nsimplify, sqrt
-from data_setup import dimensions
-from solver import Solver
+from sympy import integrate, simplify, nsimplify
+from src.utils.data_setup import dimensions
+from .solver import Solver
 from sympy.vector import CoordSys3D
 
 

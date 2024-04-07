@@ -1,7 +1,6 @@
-from data_setup import dimensions
-from open_section_solver import OpenSectionSolver
-from sympy import integrate, simplify, sqrt, Eq, solve, nsimplify, sign, Abs
-from sympy.vector import CoordSys3D
+from ..utils.data_setup import dimensions
+from .open_section_solver import OpenSectionSolver
+from sympy import integrate, simplify, Eq, solve, nsimplify, sign, Abs
 from sympy import symbols
 
 
