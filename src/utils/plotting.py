@@ -1,4 +1,4 @@
-from data_setup import dimensions
+from .data_setup import dimensions
 from sympy import symbols
 
 

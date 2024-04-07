@@ -1,8 +1,7 @@
-import pytest
-from shape import Shape
-from sympy import symbols, expand, integrate
-from data_setup import dimensions
-from open_section_solver import OpenSectionSolver
+from src import Shape
+from sympy import symbols, expand
+from src import dimensions
+from src import SectionType, SectionSolver
 
 
 def test_ex1_open_section():
@@ -13,9 +12,8 @@ def test_ex1_open_section():
                   forces="ex1_open_section/Forces.xlsx",
                   sections="ex1_open_section/ClosedSections.xlsx",
                   shear_center_ref="ex1_open_section/Shear Center Ref.xlsx")
-    solver = OpenSectionSolver(shape)
+    SectionSolver.solve(shape, SectionType.OPEN)
 
-    solver.solve()
     t = dimensions['t']
     Sz = dimensions['S_z']
     S01 = shape.elements[(0, 1)].S
@@ -49,8 +47,7 @@ def test_ex2_open_section():
                     forces="ex2_open_section/Forces.xlsx",
                     sections="ex2_open_section/ClosedSections.xlsx",
                     shear_center_ref="ex2_open_section/Shear Center Ref.xlsx")
-    solver = OpenSectionSolver(shape)
-    solver.solve()
+    SectionSolver.solve(shape, SectionType.OPEN)
     t = dimensions['t']
     Sz = dimensions['S_z']
     S01 = shape.elements[(0, 1)].S
@@ -100,9 +97,8 @@ def test_ex3_open_section():
                     forces="ex3_open_section/Forces.xlsx",
                     sections="ex3_open_section/ClosedSections.xlsx",
                     shear_center_ref="ex3_open_section/Shear Center Ref.xlsx")
-    solver = OpenSectionSolver(shape)
+    SectionSolver.solve(shape, SectionType.OPEN)
 
-    solver.solve()
     t = dimensions['t']
     Sz = dimensions['S_z']
     S01 = shape.elements[(0, 1)].S
